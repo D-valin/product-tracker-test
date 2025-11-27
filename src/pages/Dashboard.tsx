@@ -89,13 +89,17 @@ const Dashboard = () => {
                   Agregar Nuevo Producto
                 </Link>
               </Button>
-              <Button variant="outline" className="w-full justify-start" size="lg">
-                <Package className="mr-2 h-5 w-5" />
-                Registrar Entrada de Stock
+              <Button variant="outline" className="w-full justify-start" size="lg" asChild>
+                <Link to="/stock/entry">
+                  <Package className="mr-2 h-5 w-5" />
+                  Registrar Entrada de Stock
+                </Link>
               </Button>
-              <Button variant="outline" className="w-full justify-start" size="lg">
-                <TrendingUp className="mr-2 h-5 w-5" />
-                Ver Reportes
+              <Button variant="outline" className="w-full justify-start" size="lg" asChild>
+                <Link to="/reports">
+                  <TrendingUp className="mr-2 h-5 w-5" />
+                  Ver Reportes
+                </Link>
               </Button>
             </CardContent>
           </Card>
