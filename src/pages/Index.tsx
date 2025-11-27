@@ -11,7 +11,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Package className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">StockPro</h1>
+            <h1 className="text-2xl font-bold text-foreground">Product Tracker</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Características</a>
@@ -185,7 +185,7 @@ const Index = () => {
             ¿Listo para optimizar tu inventario?
           </h3>
           <p className="text-xl mb-8 opacity-90">
-            Comienza a usar StockPro hoy y lleva tu negocio al siguiente nivel
+            Comienza a usar Product Tracker hoy y lleva tu negocio al siguiente nivel
           </p>
           <Button size="lg" variant="secondary" asChild className="text-lg">
             <Link to="/dashboard">Acceder al Sistema</Link>
@@ -199,10 +199,10 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
               <Package className="h-6 w-6 text-primary" />
-              <span className="font-semibold text-foreground">StockPro</span>
+              <span className="font-semibold text-foreground">Product Tracker</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2025 StockPro. Sistema de inventario para microempresas.
+              © 2025 Product Tracker. Sistema de inventario para microempresas.
             </p>
           </div>
         </div>
