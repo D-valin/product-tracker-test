@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -5,12 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package, ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { addProduct, getCategories, getUnits } from "@/lib/products-store";
+import { getProductById, updateProduct, getCategories, getUnits } from "@/lib/products-store";
 
 const productSchema = z.object({
   name: z.string().min(1, "El nombre es requerido").max(100, "Máximo 100 caracteres"),
@@ -27,7 +28,8 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-const AddProduct = () => {
+const EditProduct = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const categories = getCategories();
   const units = getUnits();
@@ -36,16 +38,46 @@ const AddProduct = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      unit: 'unidades',
-    },
   });
 
+  const selectedCategory = watch("category");
+  const selectedUnit = watch("unit");
+
+  useEffect(() => {
+    if (!id) {
+      toast.error("Producto no encontrado");
+      navigate("/products");
+      return;
+    }
+
+    const product = getProductById(id);
+    if (!product) {
+      toast.error("Producto no encontrado");
+      navigate("/products");
+      return;
+    }
+
+    // Populate form with existing data
+    setValue("name", product.name);
+    setValue("description", product.description || "");
+    setValue("category", product.category);
+    setValue("price", product.price.toString());
+    setValue("cost", product.cost.toString());
+    setValue("stock", product.stock.toString());
+    setValue("minStock", product.minStock.toString());
+    setValue("sku", product.sku || "");
+    setValue("barcode", product.barcode || "");
+    setValue("unit", product.unit);
+  }, [id, navigate, setValue]);
+
   const onSubmit = (data: ProductFormData) => {
-    addProduct({
+    if (!id) return;
+
+    const updated = updateProduct(id, {
       name: data.name,
       description: data.description,
       category: data.category,
@@ -57,8 +89,13 @@ const AddProduct = () => {
       barcode: data.barcode,
       unit: data.unit,
     });
-    toast.success("Producto agregado exitosamente");
-    navigate("/products");
+
+    if (updated) {
+      toast.success("Producto actualizado exitosamente");
+      navigate("/products");
+    } else {
+      toast.error("Error al actualizar el producto");
+    }
   };
 
   return (
@@ -71,9 +108,9 @@ const AddProduct = () => {
             <h1 className="text-2xl font-bold text-foreground">Product Tracker</h1>
           </div>
           <Button variant="outline" asChild>
-            <Link to="/dashboard">
+            <Link to="/products">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Volver al Dashboard
+              Volver a Productos
             </Link>
           </Button>
         </div>
@@ -82,8 +119,8 @@ const AddProduct = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Agregar Nuevo Producto</h2>
-          <p className="text-muted-foreground">Completa la información del producto</p>
+          <h2 className="text-3xl font-bold text-foreground mb-2">Editar Producto</h2>
+          <p className="text-muted-foreground">Modifica la información del producto</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -109,7 +146,7 @@ const AddProduct = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="category">Categoría *</Label>
-                  <Select onValueChange={(value) => setValue("category", value)}>
+                  <Select value={selectedCategory} onValueChange={(value) => setValue("category", value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
@@ -143,7 +180,7 @@ const AddProduct = () => {
               {/* Pricing */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="cost">Costo *</Label>
+                  <Label htmlFor="cost">Precio de Compra *</Label>
                   <Input
                     id="cost"
                     type="number"
@@ -174,7 +211,7 @@ const AddProduct = () => {
               {/* Inventory */}
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="stock">Stock Inicial *</Label>
+                  <Label htmlFor="stock">Stock Actual *</Label>
                   <Input
                     id="stock"
                     type="number"
@@ -201,7 +238,7 @@ const AddProduct = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="unit">Unidad de Medida *</Label>
-                  <Select defaultValue="unidades" onValueChange={(value: 'unidades' | 'litros' | 'cajas') => setValue("unit", value)}>
+                  <Select value={selectedUnit} onValueChange={(value: 'unidades' | 'litros' | 'cajas') => setValue("unit", value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona unidad" />
                     </SelectTrigger>
@@ -222,7 +259,7 @@ const AddProduct = () => {
               {/* Additional Info */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="sku">SKU</Label>
+                  <Label htmlFor="sku">Código SKU</Label>
                   <Input
                     id="sku"
                     placeholder="Código interno"
@@ -249,9 +286,9 @@ const AddProduct = () => {
               {/* Actions */}
               <div className="flex justify-end gap-4 pt-4">
                 <Button type="button" variant="outline" asChild>
-                  <Link to="/dashboard">Cancelar</Link>
+                  <Link to="/products">Cancelar</Link>
                 </Button>
-                <Button type="submit">Guardar Producto</Button>
+                <Button type="submit">Guardar Cambios</Button>
               </div>
             </CardContent>
           </Card>
@@ -261,4 +298,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;
