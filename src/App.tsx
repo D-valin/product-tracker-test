@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
+import ProductMovements from "./pages/ProductMovements";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import StockEntry from "./pages/StockEntry";
@@ -13,6 +15,9 @@ import Movements from "./pages/Movements";
 import Suppliers from "./pages/Suppliers";
 import Warehouses from "./pages/Warehouses";
 import Reports from "./pages/Reports";
+import LowStockAlerts from "./pages/LowStockAlerts";
+import Orders from "./pages/Orders";
+import Customers from "./pages/Customers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,11 +34,16 @@ const App = () => (
           <Route path="/products" element={<Products />} />
           <Route path="/products/add" element={<AddProduct />} />
           <Route path="/products/edit/:id" element={<EditProduct />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/products/:id/movements" element={<ProductMovements />} />
           <Route path="/stock/entry" element={<StockEntry />} />
           <Route path="/movements" element={<Movements />} />
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/warehouses" element={<Warehouses />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/low-stock" element={<LowStockAlerts />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/customers" element={<Customers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
