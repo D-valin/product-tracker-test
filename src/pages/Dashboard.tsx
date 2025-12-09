@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Package, TrendingUp, AlertCircle, BarChart3, Plus, List, Truck, Warehouse, History } from "lucide-react";
+import { Package, TrendingUp, AlertCircle, BarChart3, Plus, List, Truck, Warehouse, History, ShoppingCart, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getProducts } from "@/lib/products-store";
 
@@ -52,15 +52,18 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Stock Bajo</CardTitle>
-              <AlertCircle className="h-4 w-4 text-destructive" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-destructive">{lowStockProducts.length}</div>
-            </CardContent>
-          </Card>
+          <Link to="/low-stock">
+            <Card className="hover:border-destructive/50 transition-colors cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Stock Bajo</CardTitle>
+                <AlertCircle className="h-4 w-4 text-destructive" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-destructive">{lowStockProducts.length}</div>
+                <p className="text-xs text-muted-foreground">Ver alertas</p>
+              </CardContent>
+            </Card>
+          </Link>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -75,7 +78,7 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader>
               <CardTitle>Gestión de Inventario</CardTitle>
@@ -93,6 +96,24 @@ const Dashboard = () => {
               </Button>
               <Button variant="outline" className="w-full justify-start" size="lg" asChild>
                 <Link to="/movements"><History className="mr-2 h-5 w-5" />Historial</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Ventas y Compras</CardTitle>
+              <CardDescription>Órdenes y clientes</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button variant="outline" className="w-full justify-start" size="lg" asChild>
+                <Link to="/orders"><ShoppingCart className="mr-2 h-5 w-5" />Órdenes y Pedidos</Link>
+              </Button>
+              <Button variant="outline" className="w-full justify-start" size="lg" asChild>
+                <Link to="/customers"><Users className="mr-2 h-5 w-5" />Clientes</Link>
+              </Button>
+              <Button variant="outline" className="w-full justify-start" size="lg" asChild>
+                <Link to="/low-stock"><AlertCircle className="mr-2 h-5 w-5" />Alertas de Stock</Link>
               </Button>
             </CardContent>
           </Card>
@@ -118,8 +139,15 @@ const Dashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Alertas de Stock Bajo</CardTitle>
-            <CardDescription>Productos que necesitan reabastecimiento</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Alertas de Stock Bajo</CardTitle>
+                <CardDescription>Productos que necesitan reabastecimiento</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/low-stock">Ver Todas</Link>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {lowStockProducts.length === 0 ? (
@@ -127,13 +155,15 @@ const Dashboard = () => {
             ) : (
               <div className="space-y-4">
                 {lowStockProducts.slice(0, 5).map((product) => (
-                  <div key={product.id} className="flex items-center justify-between border-b pb-3">
-                    <div>
-                      <p className="font-medium text-foreground">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">Stock: {product.stock} / Mínimo: {product.minStock}</p>
+                  <Link key={product.id} to={`/products/${product.id}`} className="block">
+                    <div className="flex items-center justify-between border-b pb-3 hover:bg-muted/50 -mx-2 px-2 rounded transition-colors">
+                      <div>
+                        <p className="font-medium text-foreground">{product.name}</p>
+                        <p className="text-sm text-muted-foreground">Stock: {product.stock} / Mínimo: {product.minStock}</p>
+                      </div>
+                      <AlertCircle className="h-5 w-5 text-destructive" />
                     </div>
-                    <AlertCircle className="h-5 w-5 text-destructive" />
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
